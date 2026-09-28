@@ -134,6 +134,35 @@ input[readonly]{background:var(--soft);color:var(--muted)}
 .qpreg b{display:block;margin-bottom:4px;color:var(--navy)}
 .qok{color:var(--ok);font-weight:700}.qbad{color:var(--error);font-weight:700}
 .qexp{font-size:14px;color:var(--muted);margin-top:4px}
+.docs{margin:18px 0 6px;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.docs summary{font-weight:700;color:var(--navy);cursor:pointer}
+.docs ul{margin:10px 0 0 20px}
+.qzp{padding:18px 20px 40px}
+.qzp-top{font-weight:700;color:var(--navy);font-size:16px;margin-bottom:14px}
+.qzp-track{height:6px;background:#eef1f3;border-radius:3px;overflow:hidden}
+.qzp-track i{display:block;height:100%;width:0;background:var(--orange);border-radius:3px;transition:width .25s ease}
+.qzp-label{font-size:12px;color:var(--muted);margin:8px 0 22px;font-weight:600}
+.qtxt{font-size:18px;font-weight:600;line-height:1.4;color:var(--navy);margin-bottom:20px}
+.qopts{display:flex;flex-direction:column;gap:10px}
+.qop{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;padding:14px;border:1.5px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-size:15px;line-height:1.4;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.qop .let{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted)}
+.qop.sel{border-color:var(--navy2);background:#f4f6fa}
+.qop.sel .let{border-color:var(--navy2);background:var(--navy2);color:#fff}
+.qnav{display:flex;gap:10px;margin-top:26px}
+.qnav .btn{flex:1;margin:0}
+.qnav .btn.sec{flex:0 0 38%}
+.qnav .btn:disabled{background:#c7d0d6;border-color:#c7d0d6;color:#fff}
+.qscore{text-align:center;padding:26px 18px 22px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:20px}
+.qscore .big{font-size:52px;font-weight:800;color:var(--navy);line-height:1}
+.qscore .den{font-size:16px;color:var(--muted);margin-top:4px}
+.qpill{display:inline-block;margin-top:14px;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700}
+.qpill.pass{background:#e7f5ec;color:var(--ok)}.qpill.fail{background:#fbeceb;color:var(--error)}
+.qref{border:1.5px solid var(--line);border-radius:8px;padding:16px;margin-bottom:18px}
+.qref h4{font-size:14px;color:var(--navy);margin:0 0 8px}
+.qref p,.qref li{font-size:14px;color:var(--muted);line-height:1.5}
+.qref ul{margin:0 0 0 18px}.qref .none{color:var(--ok);font-weight:600}
+.qzp .btn{width:100%;margin-top:10px}
+.qbtn .st{display:block;font-weight:600;color:var(--ok);font-size:14px;margin-top:2px}
 .aviso{background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:8px 0 6px;font-size:14px;line-height:1.5;color:var(--ink)}
 .aviso strong{display:block;color:var(--navy);font-size:15px;margin-bottom:6px}
 .aviso a{color:var(--navy2);font-weight:600}
@@ -443,16 +472,23 @@ input[readonly]{background:var(--soft);color:var(--muted)}
         <button type="button" class="qbtn" data-q="fuerza">Uso legal de la fuerza: prevenir primero<small>6 preguntas</small></button>
       </div>
       <p id="qzMsg" style="font-weight:600;color:var(--navy)"></p>
-      <div id="qzBox"></div>
     </div>
-    <p><strong>Toma captura de esta pantalla.</strong> Ten a la mano estos documentos para tu entrevista:</p>
     <div id="valRes"></div>
+    <details class="docs"><summary>Documentos para tu entrevista</summary>
     <ul>
       <li>Acta de nacimiento</li><li>CURP</li><li>INE</li><li>Comprobante de domicilio</li>
       <li>Número de Seguro Social (IMSS)</li><li>Certificado de secundaria</li>
       <li>Cartilla militar (hombres)</li>
       <li>Comprobante de Infonavit o Fonacot, si tienes crédito</li>
     </ul>
+    </details>
+  </div>
+
+  <div class="qzp" id="qzp" hidden>
+    <div class="qzp-top" id="qzpTitulo"></div>
+    <div class="qzp-track"><i id="qzpBar"></i></div>
+    <div class="qzp-label" id="qzpNum"></div>
+    <div id="qzpBody"></div>
   </div>
 
   <div class="done" id="filtrado">
@@ -980,45 +1016,59 @@ function mostrarEspera(esp){
     const lista=esp.elegidos.map(id=>{const v=VALORES.filter(x=>x.id===id)[0];return v?`<li><b>${v.n}</b> ${v.x}</li>`:'';}).join('');
     $('valRes').innerHTML=`<div class="escena"><strong>Nuestros Valores${typeof esp.val==='number'?': acertaste '+esp.val+' de 3':''}</strong><ul style="margin:6px 0 0 18px;font-size:15px">${lista}</ul><p style="margin-top:8px">Estos valores te acompañarán en tu entrevista.</p></div>`;
   }
-  $('done').classList.add('show'); window.scrollTo({top:0});
+  $('done').classList.add('show'); window.scrollTo({top:0}); estadoMenuQuiz();
 }
-function cerrarQuiz(){ $('qzMenu').style.display='none'; $('qzBox').innerHTML=''; $('qzMsg').textContent='Gracias por tu tiempo. Los Quiz ya no están disponibles.'; }
+function cerrarQuiz(){ salirQuiz(); $('qzMenu').style.display='none'; $('qzMsg').textContent='Gracias por tu tiempo. Los Quiz ya no están disponibles.'; }
+const ORDEN_QUIZ=['lectura','fuerza'];
 let QACT=null;
+function estadoMenuQuiz(){
+  const hechos=(ESP&&ESP.quiz)||{};
+  document.querySelectorAll('#qzMenu .qbtn').forEach(b=>{
+    const k=b.dataset.q, st=b.querySelector('.st'); if(st)st.remove();
+    if(hechos[k]){const e=document.createElement('span');e.className='st';e.textContent='Completado: '+hechos[k];b.appendChild(e);}
+  });
+}
+function salirQuiz(){ $('qzp').hidden=true; $('done').classList.add('show'); estadoMenuQuiz(); setTimeout(()=>{const q=$('qz');if(q)q.scrollIntoView();},50); }
 async function abrirQuiz(clave){
   $('qzMsg').textContent='Abriendo…';
   try{const r=await api({action:'quizEstado',folio:ESP.folio}); if(r.cerrado){cerrarQuiz();return;}}catch(e){}
   $('qzMsg').textContent='';
-  const q=QUIZ[clave]; let n=0;
-  QACT={clave,inicio:Date.now(),preg:[]};
-  let h=`<h3 style="margin-top:14px">${q.t}</h3><p class="qexp" style="font-size:15px">${q.intro}</p>`;
-  q.partes.forEach(pt=>{
-    if(pt.txt)h+=`<div class="qtexto">${pt.txt}</div>`;
-    pt.p.forEach(pr=>{
-      const orden=pr.fija?pr.o.map((_,i)=>i).slice(1).concat([0]):barajar(pr.o.map((_,i)=>i));
-      QACT.preg.push(pr);
-      h+=`<div class="qpreg" id="qp${n}"><b>${n+1}. ${pr.q}</b>`+orden.map(k=>`<label class="opt"><input type="radio" name="qr${n}" value="${k}"><span>${pr.o[k]}</span></label>`).join('')+`<div class="qfb"></div></div>`;
-      n++;
-    });
-  });
-  h+=`<button type="button" class="btn pri" id="qzEnviar" style="width:100%;margin-top:6px">Ver mi resultado</button> <button type="button" class="linkbtn" id="qzVolver">Volver a los Quiz</button>`;
-  $('qzMenu').style.display='none'; $('qzBox').innerHTML=h; $('qzBox').scrollIntoView({behavior:'smooth'});
-  $('qzVolver').onclick=()=>{$('qzBox').innerHTML='';$('qzMenu').style.display='block';};
-  $('qzEnviar').onclick=calificarQuiz;
+  const q=QUIZ[clave], preg=[];
+  q.partes.forEach(pt=>pt.p.forEach(pr=>preg.push({pr:pr,txt:pt.txt,orden:pr.fija?pr.o.map((_,i)=>i).slice(1).concat([0]):barajar(pr.o.map((_,i)=>i))})));
+  QACT={clave:clave,q:q,preg:preg,i:0,resp:{},inicio:Date.now()};
+  $('done').classList.remove('show'); $('qzp').hidden=false; $('qzpTitulo').textContent=q.t;
+  pintarPregunta(); window.scrollTo({top:0});
 }
-async function calificarQuiz(){
-  let ac=0,faltan=0;
-  QACT.preg.forEach((pr,i)=>{const r=document.querySelector(`input[name="qr${i}"]:checked`);if(!r){faltan++;return;}});
-  if(faltan){$('qzMsg').textContent='Te faltan '+faltan+' pregunta(s) por contestar.';return;}
-  QACT.preg.forEach((pr,i)=>{
-    const r=document.querySelector(`input[name="qr${i}"]:checked`); const bien=r.value==='0'; if(bien)ac++;
-    document.querySelector(`#qp${i} .qfb`).innerHTML=(bien?'<span class="qok">Correcto.</span>':'<span class="qbad">Respuesta correcta:</span> '+pr.o[0])+(pr.x?'<div class="qexp">'+pr.x+'</div>':'');
-    document.querySelectorAll(`input[name="qr${i}"]`).forEach(x=>x.disabled=true);
-  });
-  const total=QACT.preg.length, seg=Math.round((Date.now()-QACT.inicio)/1000);
-  $('qzEnviar').outerHTML='<p style="font-weight:700;color:var(--navy);margin:8px 0">¡Bien hecho! Acertaste '+ac+' de '+total+'. Revisa las respuestas para aprender más.</p><button type="button" class="btn sec" id="qzOtra" style="width:100%">Intentar de nuevo</button>';
-  $('qzOtra').onclick=()=>abrirQuiz(QACT.clave);
-  $('qzMsg').textContent='';
-  try{const r=await api({action:'quiz',folio:ESP.folio,quiz:QACT.clave,aciertos:ac,total:total,segundos:seg}); if(r&&r.cerrado)cerrarQuiz();}catch(e){}
+const LETRAS=['A','B','C','D','E'];
+function pintarPregunta(){
+  const P=QACT.preg[QACT.i], tot=QACT.preg.length, resp=QACT.resp[QACT.i];
+  $('qzpNum').textContent='Pregunta '+(QACT.i+1)+' de '+tot;
+  $('qzpBar').style.width=Math.round((QACT.i+1)/tot*100)+'%';
+  let h=QACT.i===0?`<p class="qexp" style="font-size:14px;margin-bottom:14px">${QACT.q.intro}</p>`:'';
+  if(P.txt)h+=`<div class="qtexto">${P.txt}</div>`;
+  h+=`<div class="qtxt">${P.pr.q}</div><div class="qopts">`+P.orden.map((k,n)=>`<button type="button" class="qop${resp===k?' sel':''}" data-k="${k}"><span class="let">${LETRAS[n]}</span><span>${P.pr.o[k]}</span></button>`).join('')+'</div>';
+  h+=`<div class="qnav">${QACT.i>0?'<button type="button" class="btn sec" id="qant">Anterior</button>':''}<button type="button" class="btn pri" id="qsig"${resp===undefined?' disabled':''}>${QACT.i===tot-1?'Ver resultado':'Siguiente'}</button></div>`;
+  $('qzpBody').innerHTML=h;
+  $('qzpBody').querySelectorAll('.qop').forEach(b=>b.onclick=()=>{QACT.resp[QACT.i]=Number(b.dataset.k);pintarPregunta();});
+  if($('qant'))$('qant').onclick=()=>{QACT.i--;pintarPregunta();window.scrollTo({top:0});};
+  $('qsig').onclick=()=>{ if(QACT.i===tot-1)terminarQuiz(); else {QACT.i++;pintarPregunta();window.scrollTo({top:0});} };
+}
+async function terminarQuiz(){
+  const tot=QACT.preg.length, seg=Math.round((Date.now()-QACT.inicio)/1000);
+  let ac=0; const fallas=[];
+  QACT.preg.forEach((P,i)=>{ if(QACT.resp[i]===0)ac++; else fallas.push(i); });
+  $('qzpBar').style.width='100%'; $('qzpNum').textContent='Resultado';
+  ESP.quiz=ESP.quiz||{}; const prev=Number(String(ESP.quiz[QACT.clave]||'0').split(' ')[0]);
+  if(ac>=prev)ESP.quiz[QACT.clave]=ac+' de '+tot;
+  try{localStorage.setItem(ESPERA,JSON.stringify(ESP));}catch(e){}
+  const aprobado=ac/tot>=0.7, sig=ORDEN_QUIZ.filter(k=>k!==QACT.clave&&!ESP.quiz[k])[0];
+  $('qzpBody').innerHTML=`<div class="qscore"><p style="font-weight:700;color:var(--navy);margin-bottom:10px">${aprobado?'¡Enhorabuena!':'¡Buen intento!'}</p><div class="big">${ac}</div><div class="den">de ${tot} correctas</div><span class="qpill ${aprobado?'pass':'fail'}">${aprobado?'Aprobado':'Por reforzar'}</span></div>`+
+    (sig?`<button type="button" class="btn pri" id="qnext">Siguiente quiz: ${QUIZ[sig].t}</button>`:'')+
+    `<button type="button" class="btn ${sig?'sec':'pri'}" id="qmenu">Regresar a los Quiz</button><button type="button" class="linkbtn" id="qotra" style="display:block;margin:12px auto 0">Intentar de nuevo</button>`;
+  if(sig)$('qnext').onclick=()=>abrirQuiz(sig);
+  $('qmenu').onclick=salirQuiz; $('qotra').onclick=()=>abrirQuiz(QACT.clave);
+  window.scrollTo({top:0});
+  try{const r=await api({action:'quiz',folio:ESP.folio,quiz:QACT.clave,aciertos:ac,total:tot,segundos:seg}); if(r&&r.cerrado)cerrarQuiz();}catch(e){}
 }
 $('qzMenu').addEventListener('click',e=>{const b=e.target.closest('.qbtn');if(b)abrirQuiz(b.dataset.q);});
 
