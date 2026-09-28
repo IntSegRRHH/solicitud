@@ -24,7 +24,6 @@ html,body{height:100%;background:#1C2236;color:#F4F5F7;font-family:Arial,Helveti
 #num{font-size:340px;font-size:40vh;font-weight:bold;line-height:1;color:#F4F5F7}
 #num.flash{color:#EE552B}
 #con{font-size:50px;font-size:5.5vh;font-weight:bold}
-#rec{color:#EE552B}
 #pie{position:absolute;left:4%;right:4%;bottom:4%;height:14%;border-top:4px solid #2B3450;padding-top:1.5%}
 #pie .t{float:left;font-size:26px;font-size:3vh;color:#A9B1C4;margin:2% 3% 0 0}
 .chip{float:left;background:#2B3450;border-radius:10px;padding:8px 22px;margin-right:18px;font-size:52px;font-size:6vh;font-weight:bold;line-height:1}
@@ -47,7 +46,7 @@ html,body{height:100%;background:#1C2236;color:#F4F5F7;font-family:Arial,Helveti
     <div id="turno">
       <div id="lbl">TURNO</div>
       <div id="num">0</div>
-      <div id="con">Pasa con <span id="rec"></span></div>
+      <div id="con">Pase a entrevista</div>
     </div>
   </div>
   <div id="pie"><div class="t">Turnos anteriores</div><div id="hist"></div></div>
@@ -90,7 +89,7 @@ function aviso(){
 function decir(a){
   try{
     if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
-    var u=new SpeechSynthesisUtterance('Turno '+a.num+'. Pasa con '+a.rec); u.lang='es-MX'; u.rate=0.9;
+    var u=new SpeechSynthesisUtterance('Turno '+a.num+'. Pase a entrevista.'); u.lang='es-MX'; u.rate=0.9;
     setTimeout(function(){window.speechSynthesis.speak(u);},900);
   }catch(e){}
 }
@@ -99,9 +98,9 @@ function parpadeo(){flashes=0;var t=setInterval(function(){var n=$('num');n.clas
 function pintar(r){
   var a=r.actual;
   $('espera').style.display=a?'none':'block'; $('turno').style.display=a?'block':'none';
-  if(a){$('num').innerHTML=a.num; $('rec').innerHTML=esc(a.rec);}
+  if(a){$('num').innerHTML=a.num;}
   var h='', hist=r.hist||[];
-  for(var i=0;i<hist.length&&i<5;i++){h+='<div class="chip">'+hist[i].num+'<small>'+esc(hist[i].rec)+'</small></div>';}
+  for(var i=0;i<hist.length&&i<5;i++){h+='<div class="chip">'+hist[i].num+'</div>';}
   $('hist').innerHTML=h;
   if(a&&a.id!==ultimoId){ if(ultimoId!==null){parpadeo();if(iniciada){aviso();decir(a);}} ultimoId=a.id; }
   if(!a&&ultimoId===null)ultimoId='-';
